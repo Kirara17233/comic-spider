@@ -45,7 +45,9 @@ def save_comic(source, comic):
     for category in comic['category_id']:
         if not session.query(Category[source]).filter_by(name=category['name']).first():
             session.add(Category[source](id=category['id'], name=category['name']))
-        session.add(ComicCategory[source](comic_id=comic['id'], category_id=category['id']))
+            session.add(ComicCategory[source](comic_id=comic['id'], category_id=category['id']))
+        elif not session.query(ComicCategory[source]).filter_by(comic_id=comic['id'], category_id=category['id']):
+            session.add(ComicCategory[source](comic_id=comic['id'], category_id=category['id']))
     session.commit()
     session.close()
 
