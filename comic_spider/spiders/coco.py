@@ -53,7 +53,6 @@ class CocoSpider(scrapy.Spider):
             yield new_chapter
             if not has_mapping(self.name, new_chapter['name']):
                 yield SplashRequest(main_url + chapter.xpath('./@href').get(), callback=self.parse_chapter)
-        yield comic
 
     def parse_chapter(self, response):
         mapping = MappingItem[self.name]()
