@@ -1,7 +1,7 @@
 import scrapy
 from scrapy_splash import SplashRequest
 
-from comic_spider.items import ComicItem, ChapterItem, MappingItem
+from comic_spider.items import ComicItem, CategoryItem, ChapterItem, MappingItem
 from comic_spider.source import coco
 from comic_spider.spiders.functions import get_main_url
 from comic_spider.orm.orm import get_source, has_mapping
@@ -37,7 +37,9 @@ class CocoSpider(scrapy.Spider):
             if li.xpath('./span/text()').get() == '作者':
                 comic['author'] = li.xpath('./a/text()').get()
             if li.xpath('./span/text()').get() == '类别':
-                comic['category_id'] = li.xpath('.//a/text()').getall()
+                comic['category_id'] = []
+                for category in li.xpath('.//a'):
+                    comic['category_id'].append(CategoryItem[self.name](id=int(category.xpath('./@href').get()[21:]), name = category.xpath('./text()').get()))
             if li.xpath('./span/text()').get() == '更新':
                 comic['update'] = li.xpath('./a/text()').get()
                 if comic['update'][:4] == '2564':

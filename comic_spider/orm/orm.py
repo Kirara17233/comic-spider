@@ -22,16 +22,6 @@ def get_source(source):
     return url
 
 
-def add_category(source, category_name):
-    session = DBSession()
-    category = Category[source](name=category_name)
-    session.add(category)
-    session.commit()
-    category_id = category.id
-    session.close()
-    return category_id
-
-
 def has_mapping(source, chapter_name):
     result = False
     session = DBSession()
@@ -53,10 +43,9 @@ def save_comic(source, comic):
         session.add(Comic[source](id=comic['id'], name=comic['name'], author=comic['author'], update=comic['update']))
         session.commit()
     for category in comic['category_id']:
-        category_in_table = session.query(Category[source]).filter_by(name=category).first()
-        if not category_in_table:
-            category_in_table.id = add_category(source, category)
-        session.add(ComicCategory[source](comic_id=comic['id'], category_id=category_in_table.id))
+        if not session.query(Category[source]).filter_by(name=category['name']).first():
+            session.add(Category[source](id=category['id'], name=category['name']))
+        session.add(ComicCategory[source](comic_id=comic['id'], category_id=category['id']))
     session.commit()
     session.close()
 

@@ -16,8 +16,8 @@ class Comic(Base):
 class Category(Base):
     __tablename__ = coco + _category
 
+    id = Column(SMALLINT, primary_key=True, nullable=False)
     name = Column(VARCHAR, primary_key=True, nullable=False)
-    id = Column(SMALLINT, primary_key=True, nullable=False, autoincrement=True)
 
 
 class ComicCategory(Base):
