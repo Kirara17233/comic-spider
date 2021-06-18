@@ -1,37 +1,42 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, SMALLINT, VARCHAR, DATE, CHAR
+from sqlalchemy import Column, SMALLINT, VARCHAR, DATE
 
 from comic_spider.source import coco
-from comic_spider.orm.constants import _category, _chapter, _mapping
+from comic_spider.orm.constants import Base, _comic, _category, _chapter, _mapping
 
 
-class Comic(declarative_base()):
+class Comic(Base):
     __tablename__ = coco
 
-    id = Column(SMALLINT, primary_key=True, nullable=True)
-    name = Column(VARCHAR, nullable=True)
-    author = Column(VARCHAR)
-    update = Column(DATE, nullable=True)
-    category = Column(CHAR, nullable=True)
+    id = Column(SMALLINT, primary_key=True, nullable=False)
+    name = Column(VARCHAR, nullable=False)
+    author = Column(VARCHAR, nullable=True)
+    update = Column(DATE, nullable=False)
 
 
-class Category(declarative_base()):
+class Category(Base):
     __tablename__ = coco + _category
 
-    name = Column(VARCHAR, primary_key=True, nullable=True)
-    id = Column(SMALLINT, primary_key=True, nullable=True, autoincrement=True)
+    name = Column(VARCHAR, primary_key=True, nullable=False)
+    id = Column(SMALLINT, primary_key=True, nullable=False, autoincrement=True)
 
 
-class Chapter(declarative_base()):
+class ComicCategory(Base):
+    __tablename__ = coco + _comic + _category
+
+    comic_id = Column(SMALLINT, primary_key=True, nullable=False)
+    category_id = Column(SMALLINT, primary_key=True, nullable=False)
+
+
+class Chapter(Base):
     __tablename__ = coco + _chapter
 
-    comic_id = Column(SMALLINT, primary_key=True, nullable=True)
-    id = Column(SMALLINT, primary_key=True, nullable=True)
-    name = Column(VARCHAR)
+    comic_id = Column(SMALLINT, primary_key=True, nullable=False)
+    id = Column(SMALLINT, primary_key=True, nullable=False)
+    name = Column(VARCHAR, nullable=False)
 
 
-class Mapping(declarative_base()):
+class Mapping(Base):
     __tablename__ = coco + _mapping
 
-    name = Column(VARCHAR, primary_key=True, nullable=True)
-    code = Column(VARCHAR, primary_key=True, nullable=True)
+    name = Column(VARCHAR, primary_key=True, nullable=False)
+    code = Column(VARCHAR, primary_key=True, nullable=False)

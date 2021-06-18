@@ -9,6 +9,10 @@ Category = {
     coco: orm_coco.Category
 }
 
+ComicCategory = {
+    coco: orm_coco.ComicCategory
+}
+
 Chapter = {
     coco: orm_coco.Chapter
 }

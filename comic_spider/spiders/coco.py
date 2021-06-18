@@ -3,8 +3,8 @@ from scrapy_splash import SplashRequest
 
 from comic_spider.items import ComicItem, ChapterItem, MappingItem
 from comic_spider.source import coco
-from comic_spider.spiders.functions import get_main_url, code_category
-from comic_spider.orm.orm import get_source, get_categories, has_mapping
+from comic_spider.spiders.functions import get_main_url
+from comic_spider.orm.orm import get_source, has_mapping
 
 source = get_source(coco)
 main_url = get_main_url(source)
@@ -16,7 +16,6 @@ class CocoSpider(scrapy.Spider):
     start_url = main_url + '/show?orderBy=update'
 
     def start_requests(self):
-        get_categories(self.name)
         yield scrapy.Request(url=self.start_url, callback=self.parse)
 
     def parse(self, response):
@@ -38,7 +37,7 @@ class CocoSpider(scrapy.Spider):
             if li.xpath('./span/text()').get() == '作者':
                 comic['author'] = li.xpath('./a/text()').get()
             if li.xpath('./span/text()').get() == '类别':
-                comic['category'] = code_category(self.name, li.xpath('.//a/text()').getall())
+                comic['category_id'] = li.xpath('.//a/text()').getall()
             if li.xpath('./span/text()').get() == '更新':
                 comic['update'] = li.xpath('./a/text()').get()
                 if comic['update'][:4] == '2564':

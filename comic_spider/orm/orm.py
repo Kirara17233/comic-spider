@@ -1,11 +1,10 @@
 from sqlalchemy import Column, SMALLINT, VARCHAR
-from sqlalchemy.ext.declarative import declarative_base
 
-from comic_spider.orm.constants import DBSession
-from comic_spider.orm.dictionaries import Comic, Category, Chapter, Mapping
+from comic_spider.orm.constants import Base, DBSession
+from comic_spider.orm.dictionaries import Comic, Category, ComicCategory, Chapter, Mapping
 
 
-class URL(declarative_base()):
+class URL(Base):
     __tablename__ = 'source'
 
     id = Column(SMALLINT, primary_key=True, nullable=True, autoincrement=True)
@@ -21,15 +20,6 @@ def get_source(source):
     url = session.query(URL).filter_by(code=source).first()
     session.close()
     return url
-
-
-def get_categories(source):
-    session = DBSession()
-    categories = {}
-    for category in session.query(Category[source]).all():
-        categories[category.name] = category.id
-    session.close()
-    return categories
 
 
 def add_category(source, category_name):
@@ -58,11 +48,16 @@ def save_comic(source, comic):
         old_comic.name = comic['name']
         old_comic.author = comic['author']
         old_comic.update = comic['update']
-        old_comic.category = comic['category']
         session.commit()
     else:
-        session.add(Comic[source](id=comic['id'], name=comic['name'], author=comic['author'], update=comic['update'], category=comic['category']))
+        session.add(Comic[source](id=comic['id'], name=comic['name'], author=comic['author'], update=comic['update']))
         session.commit()
+    for category in comic['category_id']:
+        category_in_table = session.query(Category[source]).filter_by(name=category).first()
+        if not category_in_table:
+            category_in_table.id = add_category(source, category)
+        session.add(ComicCategory[source](comic_id=comic['id'], category_id=category_in_table.id))
+    session.commit()
     session.close()
 
 
