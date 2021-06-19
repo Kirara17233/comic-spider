@@ -39,7 +39,7 @@ class CocoSpider(scrapy.Spider):
             if li.xpath('./span/text()').get() == '类别':
                 comic['category_id'] = []
                 for category in li.xpath('.//a'):
-                    comic['category_id'].append(CategoryItem[self.name](id=int(category.xpath('./@href').get()[21:]), name = category.xpath('./text()').get()))
+                    comic['category_id'].append(CategoryItem[self.name](id=int(category.xpath('./@href').get()[21:]), name=category.xpath('./text()').get()))
             if li.xpath('./span/text()').get() == '更新':
                 comic['update'] = li.xpath('./a/text()').get()
                 if comic['update'][:4] == '2564':
