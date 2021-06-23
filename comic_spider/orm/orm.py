@@ -41,13 +41,24 @@ def save_comic(source, comic):
         old_comic.update = comic['update']
     else:
         session.add(Comic[source](id=comic['id'], name=comic['name'], author=comic['author'], update=comic['update']))
-        session.commit()
-    for category in comic['category_id']:
-        if not session.query(Category[source]).filter_by(name=category['name']).first():
+    save_category(source, comic['id'], comic['category_id'], session)
+
+
+def save_category(source, comic_id, categories, session=DBSession()):
+    for category in categories:
+        old_category = session.query(Category[source]).filter_by(name=category['name']).first()
+        if old_category:
+            old_category.id = category['id']
+            old_category.name = category['name']
+            old_comic_category = session.query(ComicCategory[source]).filter_by(comic_id=comic_id, category_id=category['id'])
+            if old_comic_category:
+                old_comic_category.comic_id = comic_id
+                old_comic_category.category_id = category['id']
+            else:
+                session.add(ComicCategory[source](comic_id=comic_id, category_id=category['id']))
+        else:
             session.add(Category[source](id=category['id'], name=category['name']))
-            session.add(ComicCategory[source](comic_id=comic['id'], category_id=category['id']))
-        elif not session.query(ComicCategory[source]).filter_by(comic_id=comic['id'], category_id=category['id']):
-            session.add(ComicCategory[source](comic_id=comic['id'], category_id=category['id']))
+            session.add(ComicCategory[source](comic_id=comic_id, category_id=category['id']))
     session.commit()
     session.close()
 
