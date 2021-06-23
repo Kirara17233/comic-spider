@@ -12,7 +12,3 @@ CategoryItem = {
 ChapterItem = {
     coco: items_coco.ChapterItem,
 }
-
-MappingItem = {
-    coco: items_coco.MappingItem,
-}

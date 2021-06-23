@@ -16,7 +16,3 @@ ComicCategory = {
 Chapter = {
     coco: orm_coco.Chapter
 }
-
-Mapping = {
-    coco: orm_coco.Mapping
-}

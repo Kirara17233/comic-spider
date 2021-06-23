@@ -1,7 +1,7 @@
 from sqlalchemy import Column, SMALLINT, VARCHAR, DATE
 
 from comic_spider.source import coco
-from comic_spider.orm.constants import Base, _comic, _category, _chapter, _mapping
+from comic_spider.orm.constants import Base, _comic, _category, _chapter
 
 
 class Comic(Base):
@@ -33,10 +33,5 @@ class Chapter(Base):
     comic_id = Column(SMALLINT, primary_key=True, nullable=False)
     id = Column(SMALLINT, primary_key=True, nullable=False)
     name = Column(VARCHAR, nullable=False)
-
-
-class Mapping(Base):
-    __tablename__ = coco + _mapping
-
-    name = Column(VARCHAR, primary_key=True, nullable=False)
-    code = Column(VARCHAR, primary_key=True, nullable=False)
+    size = Column(SMALLINT, nullable=False)
+    code = Column(VARCHAR, nullable=False)

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, SMALLINT, VARCHAR
 
 from comic_spider.orm.constants import Base, DBSession
-from comic_spider.orm.dictionaries import Comic, Category, ComicCategory, Chapter, Mapping
+from comic_spider.orm.dictionaries import Comic, Category, ComicCategory, Chapter
 
 
 class URL(Base):
@@ -20,15 +20,6 @@ def get_source(source):
     url = session.query(URL).filter_by(code=source).first()
     session.close()
     return url
-
-
-def has_mapping(source, chapter_name):
-    result = False
-    session = DBSession()
-    if session.query(Mapping[source]).filter_by(name=chapter_name).first():
-        result = True
-    session.close()
-    return result
 
 
 def save_comic(source, comic):
@@ -54,14 +45,14 @@ def save_comic(source, comic):
 
 def save_chapter(source, chapter):
     session = DBSession()
-    if not session.query(Chapter[source]).filter_by(comic_id=chapter['comic_id'], id=chapter['id']).first():
-        session.add(Chapter[source](comic_id=chapter['comic_id'], id=chapter['id'], name=chapter['name']))
-        session.commit()
-    session.close()
-
-
-def save_mapping(source, mapping):
-    session = DBSession()
-    session.add(Mapping[source](name=mapping['name'], code=mapping['code']))
+    new_chapter = session.query(Chapter[source]).filter_by(comic_id=chapter['comic_id'], id=chapter['id']).first()
+    if new_chapter:
+        new_chapter.comic_id = chapter['comic_id']
+        new_chapter.id = chapter['id']
+        new_chapter.name = chapter['name']
+        new_chapter.size = chapter['size']
+        new_chapter.code = chapter['code']
+    else:
+        session.add(Chapter[source](comic_id=chapter['comic_id'], id=chapter['id'], name=chapter['name'], size=chapter['size'], code=chapter['code']))
     session.commit()
     session.close()
