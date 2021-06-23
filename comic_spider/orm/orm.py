@@ -22,6 +22,16 @@ def get_source(source):
     return url
 
 
+def has_chapter(source, comic_id, chapter_id):
+    result = False
+    session = DBSession()
+    chapter = session.query(Chapter[source]).filter_by(comic_id=comic_id, id=chapter_id).first()
+    if chapter:
+        result = True
+    session.close()
+    return result
+
+
 def save_comic(source, comic):
     session = DBSession()
     old_comic = session.query(Comic[source]).filter_by(id=comic['id']).first()

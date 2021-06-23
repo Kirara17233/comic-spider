@@ -4,7 +4,7 @@ from comic_spider.spiders.coco_crypto import decrypt
 from comic_spider.items import ComicItem, CategoryItem, ChapterItem
 from comic_spider.source import coco
 from comic_spider.spiders.functions import get_main_url
-from comic_spider.orm.orm import get_source
+from comic_spider.orm.orm import get_source, has_chapter
 
 source = get_source(coco)
 main_url = get_main_url(source)
@@ -47,7 +47,8 @@ class CocoSpider(scrapy.Spider):
         yield comic
         chapters = response.xpath('//a[@class="fed-btns-info fed-rims-info fed-part-eone"]')
         for chapter in chapters:
-            yield scrapy.Request(main_url + chapter.xpath('./@href').get(), callback=self.parse_chapter)
+            if not has_chapter(self.name, comic['id'], chapter.xpath('./@href').get()[9:-5]):
+                yield scrapy.Request(main_url + chapter.xpath('./@href').get(), callback=self.parse_chapter)
 
     def parse_chapter(self, response):
         chapter = ChapterItem[self.name]()
