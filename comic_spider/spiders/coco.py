@@ -1,5 +1,5 @@
 import scrapy
-from scrapy_splash import SplashRequest
+from comic_spider.spiders.coco_crypto import decrypt
 
 from comic_spider.items import ComicItem, CategoryItem, ChapterItem, MappingItem
 from comic_spider.source import coco
@@ -53,12 +53,14 @@ class CocoSpider(scrapy.Spider):
             new_chapter['name'] = chapter.xpath('./@title').get()
             yield new_chapter
             if not has_mapping(self.name, new_chapter['name']):
-                yield SplashRequest(main_url + chapter.xpath('./@href').get(), callback=self.parse_chapter)
+                yield scrapy.Request(main_url + chapter.xpath('./@href').get(), callback=self.parse_chapter)
 
     def parse_chapter(self, response):
         mapping = MappingItem[self.name]()
         mapping['name'] = response.xpath('//div[@class="mh_readtitle"]//strong/text()').get()
-        code = response.xpath('//img[@onerror="__cr.imgOnError()"]/@src').get()
-        if code:
-            mapping['code'] = code[33:-9]
-            yield mapping
+        for text in response.xpath('//script/text()').getall():
+            if text[:12] == 'var C_DATA=\'':
+                mapping['code'] = text[12:-2]
+                break
+        mapping['code'] = decrypt(mapping['code'])
+        yield mapping
