@@ -22,10 +22,14 @@ def get_source(source):
     return url
 
 
-def has_chapter(source, comic_id, chapter_id):
+def has_chapter(source, comic_id, chapter_info):
     result = False
+    chapter = None
     session = DBSession()
-    chapter = session.query(Chapter[source]).filter_by(comic_id=comic_id, id=chapter_id).first()
+    if isinstance(chapter_info, int):
+        chapter = session.query(Chapter[source]).filter_by(comic_id=comic_id, id=chapter_info).first()
+    elif isinstance(chapter_info, str):
+        chapter = session.query(Chapter[source]).filter_by(comic_id=comic_id, name=chapter_info).first()
     if chapter:
         result = True
     session.close()
