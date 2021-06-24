@@ -26,7 +26,7 @@ class CocoSpider(scrapy.Spider):
                 comic_url = main_url + comic.xpath(href_attribute).get()
                 yield scrapy.Request(comic_url, callback=self.parse_comic)
         next_page = response.xpath(page_content)
-        if len(next_page) == 2 or next_page.xpath(content).get() == '下页':
+        if len(next_page) == 2 or next_page.xpath(text_content).get() == '下页':
             next_url = main_url + '/show?orderBy=update&page=' + next_page[-1].xpath(onclick_attribute).get()[11:-2]
             yield scrapy.Request(next_url, callback=self.parse)
 
@@ -39,13 +39,14 @@ class CocoSpider(scrapy.Spider):
             if li.xpath(span_content).get() == '作者':
                 comic['author'] = li.xpath('./a/text()').get()
             if li.xpath(span_content).get() == '类别':
-                comic['category_id'] = []
                 for category in li.xpath('.//a'):
-                    comic['category_id'].append(CategoryItem[self.name](id=int(category.xpath(href_attribute).get()[21:]), name=category.xpath(content).get()))
+                    yield CategoryItem[self.name](comic_id=comic['id'],
+                                                  id=int(category.xpath(href_attribute).get()[21:]),
+                                                  name=category.xpath(text_content).get())
             if li.xpath(span_content).get() == '更新':
-                comic['update'] = li.xpath(date_content).get()
-                if comic['update'][:4] == '2564':
-                    comic['update'] = '2021' + comic['update'][4:]
+                comic['update'] = li.xpath(a_content).get()
+                if comic['update'][:3] == '256':
+                    comic['update'] = str(int(comic['update'][:4]) - 543) + comic['update'][4:]
         yield comic
         chapters = response.xpath(chapters_content)
         for chapter in chapters:
