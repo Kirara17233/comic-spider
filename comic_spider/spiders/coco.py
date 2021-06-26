@@ -22,9 +22,8 @@ class CocoSpider(scrapy.Spider):
     def parse(self, response):
         comic_list = response.xpath(comics_content)
         for comic in comic_list:
-            if not has_chapter(self.name, int(comic.xpath(href_attribute).get()[1:-1]), comic.xpath(chapter_name_content).get()):
-                comic_url = main_url + comic.xpath(href_attribute).get()
-                yield scrapy.Request(comic_url, callback=self.parse_comic)
+            comic_url = main_url + comic.xpath(href_attribute).get()
+            yield scrapy.Request(comic_url, callback=self.parse_comic)
         next_page = response.xpath(page_content)
         if len(next_page) == 2 or next_page.xpath(text_content).get() == '下页':
             next_url = main_url + '/show?orderBy=update&page=' + next_page[-1].xpath(onclick_attribute).get()[11:-2]
@@ -38,16 +37,18 @@ class CocoSpider(scrapy.Spider):
         for li in li_list:
             if li.xpath(span_content).get() == '作者':
                 comic['author'] = li.xpath('./a/text()').get()
-            if li.xpath(span_content).get() == '类别':
-                for category in li.xpath('.//a'):
-                    yield CategoryItem[self.name](comic_id=comic['id'],
-                                                  id=int(category.xpath(href_attribute).get()[21:]),
-                                                  name=category.xpath(text_content).get())
             if li.xpath(span_content).get() == '更新':
                 comic['update'] = li.xpath(a_content).get()
                 if comic['update'][:3] == '256':
                     comic['update'] = str(int(comic['update'][:4]) - 543) + comic['update'][4:]
         yield comic
+        for li in li_list:
+            if li.xpath(span_content).get() == '类别':
+                for category in li.xpath('.//a'):
+                    yield CategoryItem[self.name](comic_id=comic['id'],
+                                                  id=int(category.xpath(href_attribute).get()[21:]),
+                                                  name=category.xpath(text_content).get())
+                break
         chapters = response.xpath(chapters_content)
         for chapter in chapters:
             if not has_chapter(self.name, comic['id'], chapter.xpath(href_attribute).get()[9:-5]):

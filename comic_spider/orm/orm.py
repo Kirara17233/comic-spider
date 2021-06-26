@@ -59,7 +59,6 @@ def save_category(source, category):
             session.add(ComicCategory[source](comic_id=category['comic_id'], category_id=category['id']))
     else:
         session.add(Category[source](id=category['id'], name=category['name']))
-        session.commit()
         session.add(ComicCategory[source](comic_id=category['comic_id'], category_id=category['id']))
     session.commit()
     session.close()
