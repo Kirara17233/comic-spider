@@ -52,14 +52,16 @@ def save_comic(source, comic):
     session.close()
 
 
-def save_category(source, category):
+def save_category(source, categories):
     session = DBSession()
-    if session.query(Category[source]).filter_by(id=category['id']).first():
-        if not session.query(ComicCategory[source]).filter_by(comic_id=category['comic_id'], category_id=category['id']).first():
+    for category in categories['list']:
+        if session.query(Category[source]).filter_by(id=category['id']).first():
+            if not session.query(ComicCategory[source]).filter_by(comic_id=category['comic_id'], category_id=category['id']).first():
+                session.add(ComicCategory[source](comic_id=category['comic_id'], category_id=category['id']))
+        else:
+            session.add(Category[source](id=category['id'], name=category['name']))
+            session.commit()
             session.add(ComicCategory[source](comic_id=category['comic_id'], category_id=category['id']))
-    else:
-        session.add(Category[source](id=category['id'], name=category['name']))
-        session.add(ComicCategory[source](comic_id=category['comic_id'], category_id=category['id']))
     session.commit()
     session.close()
 

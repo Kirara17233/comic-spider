@@ -1,7 +1,7 @@
 import scrapy
 from comic_spider.spiders.coco_crypto import decrypt
 
-from comic_spider.items import ComicItem, CategoryItem, ChapterItem
+from comic_spider.items import ComicItem, CategoryItem, CategoriesItem, ChapterItem
 from comic_spider.source import coco
 from comic_spider.spiders.functions import get_main_url
 from comic_spider.spiders.constants import *
@@ -22,8 +22,10 @@ class CocoSpider(scrapy.Spider):
     def parse(self, response):
         comic_list = response.xpath(comics_content)
         for comic in comic_list:
-            comic_url = main_url + comic.xpath(href_attribute).get()
-            yield scrapy.Request(comic_url, callback=self.parse_comic)
+            if not has_chapter(self.name, int(comic.xpath(href_attribute).get()[1:-1]),
+                               comic.xpath(chapter_name_content).get()):
+                comic_url = main_url + comic.xpath(href_attribute).get()
+                yield scrapy.Request(comic_url, callback=self.parse_comic)
         next_page = response.xpath(page_content)
         if len(next_page) == 2 or next_page.xpath(text_content).get() == '下页':
             next_url = main_url + '/show?orderBy=update&page=' + next_page[-1].xpath(onclick_attribute).get()[11:-2]
@@ -34,21 +36,23 @@ class CocoSpider(scrapy.Spider):
         comic['id'] = int(response.xpath(comic_id_content).get()[27:-1])
         comic['name'] = response.xpath(comic_name_content).get()
         li_list = response.xpath(comic_info_content)
+        category_list = None
         for li in li_list:
             if li.xpath(span_content).get() == '作者':
                 comic['author'] = li.xpath('./a/text()').get()
+            if li.xpath(span_content).get() == '类别':
+                category_list = li
             if li.xpath(span_content).get() == '更新':
                 comic['update'] = li.xpath(a_content).get()
                 if comic['update'][:3] == '256':
                     comic['update'] = str(int(comic['update'][:4]) - 543) + comic['update'][4:]
         yield comic
-        for li in li_list:
-            if li.xpath(span_content).get() == '类别':
-                for category in li.xpath('.//a'):
-                    yield CategoryItem[self.name](comic_id=comic['id'],
-                                                  id=int(category.xpath(href_attribute).get()[21:]),
-                                                  name=category.xpath(text_content).get())
-                break
+        categories = CategoriesItem[CocoSpider.name](list=[])
+        for category in category_list.xpath('.//a'):
+            categories['list'].append(CategoryItem[self.name](comic_id=comic['id'],
+                                                              id=int(category.xpath(href_attribute).get()[21:]),
+                                                              name=category.xpath(text_content).get()))
+        yield categories
         chapters = response.xpath(chapters_content)
         for chapter in chapters:
             if not has_chapter(self.name, comic['id'], chapter.xpath(href_attribute).get()[9:-5]):

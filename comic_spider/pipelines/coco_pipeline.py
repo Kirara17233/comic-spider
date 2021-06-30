@@ -1,5 +1,5 @@
 from comic_spider.source import coco
-from comic_spider.items import ComicItem, CategoryItem, ChapterItem
+from comic_spider.items import ComicItem, CategoriesItem, ChapterItem
 from comic_spider.spiders.coco import CocoSpider
 from comic_spider.orm.orm import save_comic, save_category, save_chapter
 
@@ -11,11 +11,11 @@ class CocoComicPipeline:
         return comic
 
 
-class CocoCategoryPipeline:
-    def process_item(self, category, spider):
-        if type(category) == CategoryItem[CocoSpider.name]:
-            save_category(coco, category)
-        return category
+class CocoCategoriesPipeline:
+    def process_item(self, categories, spider):
+        if type(categories) == CategoriesItem[CocoSpider.name]:
+            save_category(coco, categories)
+        return categories
 
 
 class CocoChapterPipeline:

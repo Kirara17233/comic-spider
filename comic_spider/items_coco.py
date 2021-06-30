@@ -14,6 +14,10 @@ class CategoryItem(scrapy.Item):
     name = scrapy.Field()
 
 
+class CategoriesItem(scrapy.Item):
+    list = scrapy.Field()
+
+
 class ChapterItem(scrapy.Item):
     comic_id = scrapy.Field()
     id = scrapy.Field()

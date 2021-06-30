@@ -66,7 +66,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'comic_spider.pipelines.coco_pipeline.CocoComicPipeline': 300,
-    'comic_spider.pipelines.coco_pipeline.CocoCategoryPipeline': 301,
+    'comic_spider.pipelines.coco_pipeline.CocoCategoriesPipeline': 301,
     'comic_spider.pipelines.coco_pipeline.CocoChapterPipeline': 302,
 }
 

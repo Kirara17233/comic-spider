@@ -9,6 +9,10 @@ CategoryItem = {
     coco: items_coco.CategoryItem,
 }
 
+CategoriesItem = {
+    coco: items_coco.CategoriesItem,
+}
+
 ChapterItem = {
     coco: items_coco.ChapterItem,
 }
