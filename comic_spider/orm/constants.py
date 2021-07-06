@@ -8,5 +8,5 @@ _chapter = '_chapter'
 _mapping = '_mapping'
 
 Base = declarative_base()
-engine = create_engine('mysql+pymysql://walker:0@192.168.1.108:3306/Comics?charset=utf8mb4')
+engine = create_engine('mysql://walker:0@192.168.1.108:3306/Comics?charset=utf8mb4')
 DBSession = sessionmaker(bind=engine)
