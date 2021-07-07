@@ -1,16 +1,20 @@
 point = '.'
+slash = '/'
 text = '/text()'
 href = '/@href'
+title = '/@title'
 onclick = '/@onclick'
 span = '/span'
 a = '/a'
 content = '/@content'
 text_content = point + text
 href_attribute = point + href
+title_attribute = point + title
 onclick_attribute = point + onclick
 span_content = point + span + text
 a_content = point + a + text
 
+all_a = point + slash + a
 comics_content = '//a[@class="fed-list-pics fed-lazy fed-part-2by3"]'
 chapter_name_content = './/span[@class="fed-list-remarks fed-font-xii fed-text-white fed-text-center"]' + text
 page_content = '//a[@class="fed-btns-info fed-rims-info"]'

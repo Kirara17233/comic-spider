@@ -6,6 +6,7 @@ class ComicItem(scrapy.Item):
     name = scrapy.Field()
     author = scrapy.Field()
     update = scrapy.Field()
+    latest = scrapy.Field()
 
 
 class CategoryItem(scrapy.Item):

@@ -11,6 +11,7 @@ class Comic(Base):
     name = Column(VARCHAR, nullable=False)
     author = Column(VARCHAR, nullable=True)
     update = Column(DATE, nullable=False)
+    latest = Column(VARCHAR)
 
 
 class Category(Base):
