@@ -44,7 +44,8 @@ def save_comic(source, comic):
         session.add(Comic[source](id=comic['id'],
                                   name=comic['name'],
                                   author=comic['author'],
-                                  update=comic['update']))
+                                  update=comic['update'],
+                                  latest=comic['latest']))
     session.commit()
     session.close()
 
